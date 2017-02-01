@@ -1,4 +1,4 @@
-package com.novencia.dashboard.ideabox.model;
+package com.novencia.dashboard.ideabox.domain;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -18,6 +18,13 @@ public class SequenceId {
 
 	private long sequence;
 
+	public SequenceId(){}
+	
+	public SequenceId(String id, long sequence){
+		this.id=id;
+		this.sequence=sequence;
+	}
+	
 	public String getId() {
 		return id;
 	}

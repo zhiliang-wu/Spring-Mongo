@@ -4,13 +4,13 @@ import java.util.List;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.repository.query.Param;
-import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
-import com.novencia.dashboard.ideabox.model.Idea;
+import com.novencia.dashboard.ideabox.domain.Idea;
 
-@RepositoryRestResource(collectionResourceRel = "idea", path = "idea")
-public interface IdeaRepository extends MongoRepository<Idea, String> {
+public interface IdeaRepository extends MongoRepository<Idea, Long> {
 
-	List<Idea> findByTitle(@Param("title") String title);
+	List<Idea> findByText(@Param("text") String text);
+	
+	List<Idea> findByUserId(@Param("userId") long userId);
 
 }

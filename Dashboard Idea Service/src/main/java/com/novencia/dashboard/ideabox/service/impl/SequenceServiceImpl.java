@@ -8,8 +8,8 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 
+import com.novencia.dashboard.ideabox.domain.SequenceId;
 import com.novencia.dashboard.ideabox.exception.SequenceException;
-import com.novencia.dashboard.ideabox.model.SequenceId;
 import com.novencia.dashboard.ideabox.service.SequenceService;
 
 @Service("sequenceService")

@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import com.novencia.dashboard.ideabox.model.Comment;
+import com.novencia.dashboard.ideabox.domain.Comment;
 import com.novencia.dashboard.ideabox.repository.CommentRepository;
 import com.novencia.dashboard.ideabox.service.CommentService;
 
@@ -44,7 +44,6 @@ public class CommentController {
         List<Comment> comments = repository.findAll();
         if (comments.isEmpty()) {
             return new ResponseEntity<List<Comment>>(HttpStatus.NO_CONTENT);
-            // You many decide to return HttpStatus.NOT_FOUND
         }
         return new ResponseEntity<List<Comment>>(comments, HttpStatus.OK);
     }
@@ -60,8 +59,7 @@ public class CommentController {
         Comment comment = repository.findOne(id);
         if (comment == null) {
             logger.error("Comment with id {} not found.", id);
-            return new ResponseEntity<>(("Comment with id " + id 
-                    + " not found"), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(("Comment with id " + id + " not found"), HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<Comment>(comment, HttpStatus.OK);
     }
@@ -76,13 +74,8 @@ public class CommentController {
     public ResponseEntity<?> createComment(@RequestBody Comment comment, UriComponentsBuilder ucBuilder) {
         logger.info("Creating Comment : {}", comment);
  
-        if (commentService.isCommentExist(comment)) {
-            logger.error("Unable to create. A Comment with id {} already exist", comment.getId());
-            return new ResponseEntity<Object>(("Unable to create. A Comment with same id already exist: "+comment.getId()),HttpStatus.CONFLICT);
-        }
-		
         try {
-			commentService.saveComment(comment);
+			commentService.createComment(comment);
 		} catch (Exception e) {
 			logger.error("Unable to create comment." + e.getMessage());
 			return new ResponseEntity<Object>(("Unable to create comment." + e.getMessage()),
@@ -95,17 +88,15 @@ public class CommentController {
     }
     
   
+    /**
+     * Update one comment
+     * @param id
+     * @param comment
+     * @return
+     */
     @PutMapping("/{id}")
     public ResponseEntity<?> updateComment(@PathVariable("id") long id, @RequestBody Comment comment){
 		logger.info("Updating Comment:{}", comment);
-		
-		Comment currentComment = repository.findOne(id);
-		
-		if (currentComment == null) {
-			logger.error("Unable to update. Comment with id {} not found.", id);
-			return new ResponseEntity<Object>(("Unable to upate. Comment with id " + id + " not found."),
-					HttpStatus.NOT_FOUND);
-		}
 		
 		try {
 			commentService.updateComment(comment);

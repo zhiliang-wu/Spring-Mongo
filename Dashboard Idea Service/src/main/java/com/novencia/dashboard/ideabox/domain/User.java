@@ -1,21 +1,24 @@
-package main.java.com.novencia.dashboard.idea.model;
+package com.novencia.dashboard.ideabox.domain;
 
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+
+@Document(collection = "user")
 public class User {
 
+	@Id 
 	private long id;
+	private String login;
 	private String firstName;
 	private String lastName;
 
-	public User() {
-		id = 0;
-	}
-
-	public User(long id, String firstName, String lastName) {
-		this.id = id;
+	public User(){}
+	
+	public User(String login, String firstName, String lastName) {
+		this.login=login;
 		this.firstName = firstName;
 		this.lastName = lastName;
-	}	
-	
+	}
 	
 	public long getId() {
 		return id;
@@ -25,6 +28,14 @@ public class User {
 		this.id = id;
 	}
 
+	public String getLogin() {
+		return login;
+	}
+
+	public void setLogin(String login) {
+		this.login = login;
+	}
+	
 	public String getFirstName() {
 		return firstName;
 	}
@@ -65,8 +76,9 @@ public class User {
  
     @Override
     public String toString() {
-        return "User [id=" + id + ", first name=" + firstName + ", last name =" + lastName
-                + "]";
+        return String.format(
+                "User[id=%s, login='%s, firstName=%s, lastName=%s']",
+                id, login, firstName, lastName);
     }
 
 }

@@ -1,16 +1,17 @@
-package main.java.com.novencia.dashboard.idea.service;
+package com.novencia.dashboard.ideabox.service;
 
 import java.util.List;
 
-import main.java.com.novencia.dashboard.idea.model.User;
+import com.novencia.dashboard.ideabox.domain.User;
+import com.novencia.dashboard.ideabox.exception.SequenceException;
 
 public interface UserService {
      
     User findById(long id);
     
-    void saveUser(User user);
+    void createUser(User user) throws SequenceException;
      
-    void updateUser(User user);
+    void updateUser(long userId, User user) throws Exception;
      
     void deleteUserById(long id);
  
@@ -18,6 +19,8 @@ public interface UserService {
      
     void deleteAllUsers();
      
-    boolean isUserExist(User user);
+    boolean isUserExist(long userId);
+    
+    List<User> search(String key);
      
 }
