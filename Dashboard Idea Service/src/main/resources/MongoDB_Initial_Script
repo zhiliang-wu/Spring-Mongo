@@ -1,4 +1,0 @@
-use IdeaBox
-db.sequence.insert({_id: "user",sequence: 0})
-db.sequence.insert({_id: "idea",sequence: 0})
-db.sequence.insert({_id: "comment",sequence: 0})
