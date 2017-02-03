@@ -6,3 +6,6 @@
 /.project
 /.classpath
 /ideabox.log
+/gradlew
+/gradlew.bat
+/gradle/
