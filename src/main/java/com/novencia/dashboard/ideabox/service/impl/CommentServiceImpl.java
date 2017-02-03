@@ -9,6 +9,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
 import com.novencia.dashboard.ideabox.domain.Comment;
+import com.novencia.dashboard.ideabox.exception.IdNoFoundException;
 import com.novencia.dashboard.ideabox.exception.SequenceException;
 import com.novencia.dashboard.ideabox.repository.CommentRepository;
 import com.novencia.dashboard.ideabox.service.CommentService;
@@ -43,29 +44,28 @@ public class CommentServiceImpl implements CommentService {
 	}
 
 	@Override
-	public void createComment(Comment comment) throws SequenceException,Exception {
+	public void createComment(Comment comment) throws SequenceException,IdNoFoundException {
 		
-		comment.setId(sequenceService.getNextSequenceId("comment"));
-		
+		comment.setId(sequenceService.getNextSequenceId("comment"));		
 		if(!userService.isUserExist(comment.getUserId()))
-			throw new Exception("User with id "+comment.getUserId()+" not exist");
+			throw new IdNoFoundException("User",comment.getUserId());
 		if(!ideaService.isIdeaExist(comment.getIdeaId()))
-			throw new Exception("Idea with id "+comment.getIdeaId()+" not exist");
+			throw new IdNoFoundException("Idea",comment.getIdeaId());
 		
 		repository.save(comment);
 	}
 
 
 	@Override
-	public void updateComment(Comment comment) throws Exception {
+	public void updateComment(long commentId, Comment comment) throws IdNoFoundException {
 
-		if(!isCommentExist(comment.getId()))
-			throw new Exception("Comment with id "+comment.getId()+" not exist");
+		if(!isCommentExist(commentId))
+			throw new IdNoFoundException("Comment",commentId);
 		if(!userService.isUserExist(comment.getUserId()))
-			throw new Exception("User with id "+comment.getUserId()+" not exist");
+			throw new IdNoFoundException("User",comment.getUserId());
 		if(!ideaService.isIdeaExist(comment.getIdeaId()))
-			throw new Exception("Idea with id "+comment.getIdeaId()+" not exist");
-		
+			throw new IdNoFoundException("Idea",comment.getIdeaId());
+		comment.setId(commentId);
 		repository.save(comment);
 	}
 
@@ -73,6 +73,14 @@ public class CommentServiceImpl implements CommentService {
 	@Override
 	public boolean isCommentExist(long commentId) {
 		return repository.findOne(commentId)!=null;
+	}
+
+	@Override
+	public void deleteById(long id) throws IdNoFoundException {
+		if (!isCommentExist(id)) {
+			throw new IdNoFoundException("Comment", id);
+		}
+		repository.delete(id);
 	}
 
 }

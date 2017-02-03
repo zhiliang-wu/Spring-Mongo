@@ -23,6 +23,8 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.novencia.dashboard.ideabox.domain.User;
+import com.novencia.dashboard.ideabox.exception.CustomException;
+import com.novencia.dashboard.ideabox.exception.IdNoFoundException;
 import com.novencia.dashboard.ideabox.exception.SequenceException;
 import com.novencia.dashboard.ideabox.service.UserService;
 
@@ -85,9 +87,9 @@ public class UserControllerUnitTest {
 	public void testDeleteUser() throws IOException, Exception {
 		User user = new User("login", "toto", "TOTO");
 		Mockito.when(this.userService.findById(1)).thenReturn(user);
-		Mockito.doNothing().when(userService).deleteUserById(1);
+		Mockito.doNothing().when(userService).deleteById(1);
 		mvc.perform(delete("/users/{id}", 1)).andExpect(status().isOk());
-		Mockito.verify(userService, Mockito.times(1)).deleteUserById(1);
+		Mockito.verify(userService, Mockito.times(1)).deleteById(1);
 	}
 
 	@Test
@@ -129,14 +131,27 @@ public class UserControllerUnitTest {
 	}
 
 	@Test
-	public void testUpdateUserFailed() throws IOException, Exception {
+	public void testUpdateUserIdNoFound() throws IOException, Exception {
 		User user = new User("login", "toto", "TOTO");
-		Mockito.doThrow(new Exception("error message")).when(userService).updateUser(1,user);
+		IdNoFoundException exception = new IdNoFoundException("User",1);
+		Mockito.doThrow(exception).when(userService).updateUser(1,user);
 		mvc.perform(put("/users/{id}",1).contentType(MediaType.APPLICATION_JSON).content(asJsonString(user)))
 				.andExpect(status().isConflict())
-				.andExpect(MockMvcResultMatchers.content().string("Unable to update user.error message"));
+				.andExpect(MockMvcResultMatchers.content().string(exception.getMessage()));
 		Mockito.verify(userService, Mockito.times(1)).updateUser(1,user);
 		Mockito.verifyNoMoreInteractions(userService);
 	}
 
+	@Test
+	public void testUpdateUserLogInExist() throws IOException, Exception {
+		User user = new User("login", "toto", "TOTO");
+		CustomException exception = new CustomException("error message");
+		Mockito.doThrow(exception).when(userService).updateUser(1,user);
+		mvc.perform(put("/users/{id}",1).contentType(MediaType.APPLICATION_JSON).content(asJsonString(user)))
+				.andExpect(status().isBadRequest())
+				.andExpect(MockMvcResultMatchers.content().string(exception.getMessage()));
+		Mockito.verify(userService, Mockito.times(1)).updateUser(1,user);
+		Mockito.verifyNoMoreInteractions(userService);
+	}
+	
 }

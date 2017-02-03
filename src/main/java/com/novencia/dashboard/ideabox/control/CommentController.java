@@ -41,7 +41,8 @@ public class CommentController {
      */
 	@GetMapping
     public ResponseEntity<List<Comment>> listAllComments() {
-        List<Comment> comments = repository.findAll();
+		logger.info("Fetching all comments");
+		List<Comment> comments = repository.findAll();
         if (comments.isEmpty()) {
             return new ResponseEntity<List<Comment>>(HttpStatus.NO_CONTENT);
         }
@@ -73,15 +74,7 @@ public class CommentController {
     @PostMapping
     public ResponseEntity<?> createComment(@RequestBody Comment comment, UriComponentsBuilder ucBuilder) {
         logger.info("Creating Comment : {}", comment);
- 
-        try {
-			commentService.createComment(comment);
-		} catch (Exception e) {
-			logger.error("Unable to create comment." + e.getMessage());
-			return new ResponseEntity<Object>(("Unable to create comment." + e.getMessage()),
-					HttpStatus.PRECONDITION_FAILED);
-		}
-
+		commentService.createComment(comment);
         HttpHeaders headers = new HttpHeaders();
         headers.setLocation(ucBuilder.path("/comment/{id}").buildAndExpand(comment.getId()).toUri());
         return new ResponseEntity<String>(headers, HttpStatus.CREATED);
@@ -97,15 +90,7 @@ public class CommentController {
     @PutMapping("/{id}")
     public ResponseEntity<?> updateComment(@PathVariable("id") long id, @RequestBody Comment comment){
 		logger.info("Updating Comment:{}", comment);
-		
-		try {
-			commentService.updateComment(comment);
-		} catch (Exception e) {
-			logger.error("Unable to update comment." + e.getMessage());
-			return new ResponseEntity<Object>(("Unable to update comment." + e.getMessage()),
-					HttpStatus.CONFLICT);
-		}
-    	
+		commentService.updateComment(id, comment);
 		return new ResponseEntity<Comment>(comment,HttpStatus.OK);
     }
     
@@ -119,10 +104,7 @@ public class CommentController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Comment> deleteComment(@PathVariable("id") long id) {
     	logger.info("Delete comment id:{}",id);
-    	Comment comment = repository.findOne(id);
-    	if(comment != null){
-    		repository.delete(comment);
-    	}
+    	commentService.deleteById(id);
     	return new ResponseEntity<Comment>(HttpStatus.OK);	
     }
     

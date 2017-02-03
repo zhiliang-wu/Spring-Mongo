@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.novencia.dashboard.ideabox.domain.User;
-import com.novencia.dashboard.ideabox.exception.SequenceException;
 import com.novencia.dashboard.ideabox.service.UserService;
 
 @RestController
@@ -38,7 +37,8 @@ public class UserController {
      */
     @GetMapping
     public ResponseEntity<List<User>> listAllUsers() {
-        List<User> users = userService.findAllUsers();
+    	logger.info("Fetching all users");
+    	List<User> users = userService.findAllUsers();
         if (users.isEmpty()) {
         	return new ResponseEntity<List<User>>(HttpStatus.NOT_FOUND);
         }
@@ -70,16 +70,9 @@ public class UserController {
      * @return
      */
     @PostMapping
-    public ResponseEntity<?> createUser(@RequestBody User user, UriComponentsBuilder ucBuilder) {
+    public ResponseEntity<String> createUser(@RequestBody User user, UriComponentsBuilder ucBuilder) {
         logger.info("Creating User : {}", user);
-
-        try {
-			userService.createUser(user);
-		} catch (SequenceException e) {
-			logger.error("Unable to create user."+e.getMessage());
-            return new ResponseEntity<Object>(("Unable to create user."+e.getMessage()),HttpStatus.PRECONDITION_FAILED);
-		}
- 
+		userService.createUser(user);
         HttpHeaders headers = new HttpHeaders();
         headers.setLocation(ucBuilder.path("/user/{id}").buildAndExpand(user.getId()).toUri());
         return new ResponseEntity<String>(headers, HttpStatus.CREATED);
@@ -94,15 +87,8 @@ public class UserController {
      */
     @PutMapping("/{id}")
     public ResponseEntity<?> updateUser(@PathVariable("id") long id, @RequestBody User user) {
-        logger.info("Updating User with id {}", id);
- 
-        try {
-			userService.updateUser(id,user);
-		} catch (Exception e) {
-			logger.error("Unable to update user." + e.getMessage());
-			return new ResponseEntity<Object>(("Unable to update user." + e.getMessage()),HttpStatus.CONFLICT);
-		}
-        
+        logger.info("Updating User with id {}", id);      
+		userService.updateUser(id,user);
         return new ResponseEntity<User>(user, HttpStatus.OK);
     }
  
@@ -114,14 +100,7 @@ public class UserController {
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteUser(@PathVariable("id") long id) {
         logger.info("Fetching & Deleting User with id {}", id);
- 
-        User user = userService.findById(id);
-        if (user == null) {
-            logger.error("Unable to delete. User with id {} not found.", id);
-            return new ResponseEntity<Object>(("Unable to delete. User with id " + id + " not found."),
-                    HttpStatus.NOT_FOUND);
-        }
-        userService.deleteUserById(id);
+        userService.deleteById(id);
         return new ResponseEntity<User>(HttpStatus.OK);
     }
  

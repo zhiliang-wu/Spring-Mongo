@@ -22,6 +22,7 @@ MongoDB Community Edition 3.4 https://docs.mongodb.com/manual/tutorial/install-m
 - Package application : gradle clean build
 - Generate javadoc : gradle javadoc
 - Run unit test : gradle test
+- Generate test coverage report : gradle jacoco
 
 ## Data Initial:
 

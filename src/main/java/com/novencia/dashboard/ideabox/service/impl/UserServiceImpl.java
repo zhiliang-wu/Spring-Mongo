@@ -9,6 +9,8 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
 import com.novencia.dashboard.ideabox.domain.User;
+import com.novencia.dashboard.ideabox.exception.CustomException;
+import com.novencia.dashboard.ideabox.exception.IdNoFoundException;
 import com.novencia.dashboard.ideabox.exception.SequenceException;
 import com.novencia.dashboard.ideabox.repository.UserRepository;
 import com.novencia.dashboard.ideabox.service.SequenceService;
@@ -39,17 +41,23 @@ public class UserServiceImpl implements UserService{
         repository.save(user);
     }
  
-    public void updateUser(long userId, User user) throws Exception{
+    public void updateUser(long userId, User user) throws IdNoFoundException,CustomException{
         if(!isUserExist(userId)){
-        	throw new Exception("User with id "+user.getId()+" not exist");
+        	throw new IdNoFoundException("User",user.getId());
+        }
+        if(repository.findByLogin(user.getLogin()).getId()!=userId){
+        	throw new CustomException("User with login "+user.getLogin()+" already exist");
         }
         user.setId(userId);
     	repository.save(user);
     }
  
-    public void deleteUserById(long id) {    
-       repository.delete(id);
-    }
+	public void deleteById(long userId) throws IdNoFoundException {
+		if (!isUserExist(userId)) {
+			throw new IdNoFoundException("User", userId);
+		}
+		repository.delete(userId);
+	}
  
     public boolean isUserExist(long userId) {
         return findById(userId)!=null;
@@ -65,6 +73,11 @@ public class UserServiceImpl implements UserService{
 				Criteria.where("firstName").regex(key, "i"),
 				Criteria.where("lastName").regex(key, "i"))
 				), User.class);
+	}
+
+	@Override
+	public boolean isUserExist(String login) {		
+		return repository.findByLogin(login)!=null;
 	}
 
 }
