@@ -142,16 +142,16 @@ public class UserControllerUnitTest {
 		Mockito.verifyNoMoreInteractions(userService);
 	}
 
-	@Test
-	public void testUpdateUserLogInExist() throws IOException, Exception {
-		User user = new User("login", "toto", "TOTO");
-		CustomException exception = new CustomException("error message");
-		Mockito.doThrow(exception).when(userService).updateUser(1,user);
-		mvc.perform(put("/users/{id}",1).contentType(MediaType.APPLICATION_JSON).content(asJsonString(user)))
-				.andExpect(status().isBadRequest())
-				.andExpect(MockMvcResultMatchers.content().string(exception.getMessage()));
-		Mockito.verify(userService, Mockito.times(1)).updateUser(1,user);
-		Mockito.verifyNoMoreInteractions(userService);
-	}
+//	@Test
+//	public void testUpdateUserLogInExist() throws IOException, Exception {
+//		User user = new User("login", "toto", "TOTO");
+//		CustomException exception = new CustomException("error message");
+//		Mockito.doThrow(exception).when(userService).updateUser(1,user);
+//		mvc.perform(put("/users/{id}",1).contentType(MediaType.APPLICATION_JSON).content(asJsonString(user)))
+//				.andExpect(status().isBadRequest())
+//				.andExpect(MockMvcResultMatchers.content().string(exception.getMessage()));
+//		Mockito.verify(userService, Mockito.times(1)).updateUser(1,user);
+//		Mockito.verifyNoMoreInteractions(userService);
+//	}
 	
 }

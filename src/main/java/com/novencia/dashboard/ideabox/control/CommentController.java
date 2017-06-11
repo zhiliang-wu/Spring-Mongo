@@ -108,16 +108,16 @@ public class CommentController {
     	return new ResponseEntity<Comment>(HttpStatus.OK);	
     }
     
-    /**
-     * Delete all comments
-     * @return
-     */
-    @DeleteMapping
-    public ResponseEntity<Comment> deleteComments() {
-    	logger.info("Delete All comments");
-    	repository.deleteAll();   	
-    	return new ResponseEntity<Comment>(HttpStatus.OK);	
-    }
+//    /**
+//     * Delete all comments
+//     * @return
+//     */
+//    @DeleteMapping
+//    public ResponseEntity<Comment> deleteComments() {
+//    	logger.info("Delete All comments");
+//    	repository.deleteAll();   	
+//    	return new ResponseEntity<Comment>(HttpStatus.OK);	
+//    }
     
   
 }
